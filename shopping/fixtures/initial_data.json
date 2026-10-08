@@ -1,0 +1,164 @@
+[
+{
+  "model": "shopping.category",
+  "pk": 1,
+  "fields": {
+    "name": "Style",
+    "slug": "style",
+    "image": "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=700&q=80"
+  }
+},
+{
+  "model": "shopping.category",
+  "pk": 2,
+  "fields": {
+    "name": "Home",
+    "slug": "home",
+    "image": "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=700&q=80"
+  }
+},
+{
+  "model": "shopping.category",
+  "pk": 3,
+  "fields": {
+    "name": "On the go",
+    "slug": "on-the-go",
+    "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=80"
+  }
+},
+{
+  "model": "shopping.category",
+  "pk": 4,
+  "fields": {
+    "name": "Self care",
+    "slug": "self-care",
+    "image": "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=700&q=80"
+  }
+},
+{
+  "model": "shopping.product",
+  "pk": 1,
+  "fields": {
+    "name": "Everyday shoulder bag",
+    "slug": "everyday-shoulder-bag",
+    "category": 1,
+    "price": "2450.00",
+    "old_price": "2999.00",
+    "image": "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=700&q=80",
+    "tagline": "Two colours",
+    "badge": "BESTSELLER",
+    "description": "Structured everyday shoulder bag crafted with durable canvas and leather straps. Spacious interior for daily essentials.",
+    "stock": 25,
+    "is_featured": true,
+    "created_at": "2026-10-07T16:22:09.442Z"
+  }
+},
+{
+  "model": "shopping.product",
+  "pk": 2,
+  "fields": {
+    "name": "Daily classic watch",
+    "slug": "daily-classic-watch",
+    "category": 1,
+    "price": "3200.00",
+    "old_price": "3800.00",
+    "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=700&q=80",
+    "tagline": "Quietly timeless",
+    "badge": "JUST IN",
+    "description": "Minimalist wristwatch featuring stainless steel casing, genuine leather strap, and scratch-resistant sapphire glass.",
+    "stock": 18,
+    "is_featured": true,
+    "created_at": "2026-10-07T16:22:09.448Z"
+  }
+},
+{
+  "model": "shopping.product",
+  "pk": 3,
+  "fields": {
+    "name": "Weekend slip-ons",
+    "slug": "weekend-slip-ons",
+    "category": 3,
+    "price": "1890.00",
+    "old_price": "2250.00",
+    "image": "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=700&q=80",
+    "tagline": "Made for slow days",
+    "badge": "TRENDING",
+    "description": "Neutral leather slip-ons with cushioned footbed, designed for effortless casual strolls and weekend comfort.",
+    "stock": 14,
+    "is_featured": true,
+    "created_at": "2026-10-07T16:22:09.453Z"
+  }
+},
+{
+  "model": "shopping.product",
+  "pk": 4,
+  "fields": {
+    "name": "Carry-everywhere bottle",
+    "slug": "carry-everywhere-bottle",
+    "category": 3,
+    "price": "990.00",
+    "old_price": "1290.00",
+    "image": "https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=700&q=80",
+    "tagline": "A better daily habit",
+    "badge": "ECO PICK",
+    "description": "Eco-friendly insulated stainless steel bottle keeping beverages cold for 24 hours or piping hot for 12 hours.",
+    "stock": 40,
+    "is_featured": true,
+    "created_at": "2026-10-07T16:22:09.459Z"
+  }
+},
+{
+  "model": "shopping.product",
+  "pk": 5,
+  "fields": {
+    "name": "Ceramic Minimal Vase",
+    "slug": "ceramic-minimal-vase",
+    "category": 2,
+    "price": "1450.00",
+    "old_price": "1800.00",
+    "image": "https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c?auto=format&fit=crop&w=700&q=80",
+    "tagline": "Aesthetic touch",
+    "badge": "HANDCRAFTED",
+    "description": "Elegantly proportioned ceramic vase with a warm matte stoneware finish. Ideal for dried botanicals or fresh blooms.",
+    "stock": 12,
+    "is_featured": true,
+    "created_at": "2026-10-07T16:22:09.464Z"
+  }
+},
+{
+  "model": "shopping.product",
+  "pk": 6,
+  "fields": {
+    "name": "Botanical Facial Serum",
+    "slug": "botanical-facial-serum",
+    "category": 4,
+    "price": "1650.00",
+    "old_price": "2100.00",
+    "image": "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=700&q=80",
+    "tagline": "Nourish naturally",
+    "badge": "ORGANIC",
+    "description": "Organic herbal facial serum with rosehip and squalane for intense hydration and youthful, radiant glow.",
+    "stock": 30,
+    "is_featured": true,
+    "created_at": "2026-10-07T16:22:09.469Z"
+  }
+},
+{
+  "model": "shopping.product",
+  "pk": 7,
+  "fields": {
+    "name": "Laptop",
+    "slug": "laptop",
+    "category": 1,
+    "price": "68000.00",
+    "old_price": "70000.00",
+    "image": "https://pngimg.com/uploads/laptop/laptop_PNG5938.png",
+    "tagline": "",
+    "badge": "",
+    "description": "",
+    "stock": 15,
+    "is_featured": true,
+    "created_at": "2026-10-07T16:50:46.867Z"
+  }
+}
+]

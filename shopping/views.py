@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.hashers import make_password, check_password
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
@@ -139,9 +140,12 @@ def product_detail(request, slug):
 def add_to_cart(request, product_id):
     product = Product.objects.filter(slug=product_id).first()
     if product:
-        qty = int(request.POST.get("quantity", 1))
+        try:
+            qty = max(1, int(request.POST.get("quantity", 1)))
+        except (ValueError, TypeError):
+            qty = 1
         cart = request.session.get("cart", {})
-        cart[product_id] = cart.get(product_id, 0) + max(1, qty)
+        cart[product_id] = cart.get(product_id, 0) + qty
         request.session["cart"] = cart
         request.session.modified = True
         messages.success(request, f"Added {qty} &times; '{product.name}' to your bag.")
@@ -149,7 +153,8 @@ def add_to_cart(request, product_id):
     if request.POST.get("buy_now") == "1":
         return redirect("checkout")
 
-    return redirect(request.META.get("HTTP_REFERER", "home"))
+    referer = request.META.get("HTTP_REFERER")
+    return redirect(referer if referer else "home")
 
 
 @require_POST
@@ -258,12 +263,19 @@ def checkout(request):
                 city=city,
                 postal_code=postal_code,
                 payment_method=payment_method,
-                total_amount=cart_data["cart_total"],
+                total_amount=round(cart_data["cart_total"], 2),
                 status="Pending"
             )
 
             for item in cart_data["cart_products"]:
                 prod = Product.objects.filter(slug=item["slug"]).first()
+                if prod:
+                    if prod.stock >= item["quantity"]:
+                        prod.stock -= item["quantity"]
+                    else:
+                        prod.stock = 0
+                    prod.save(update_fields=['stock'])
+
                 OrderItem.objects.create(
                     order=order,
                     product=prod,
@@ -271,7 +283,7 @@ def checkout(request):
                     product_image=item["image"],
                     price=item["price"],
                     quantity=item["quantity"],
-                    subtotal=item["subtotal"]
+                    subtotal=round(item["subtotal"], 2)
                 )
 
             # Clear cart
@@ -300,7 +312,14 @@ def my_orders(request):
         return redirect("login")
 
     customer = Register.objects.filter(id=user_id).first()
-    orders = Order.objects.filter(Q(customer=customer) | Q(email=customer.email)).prefetch_related("items").order_by("-created_at")
+    if not customer:
+        request.session.flush()
+        messages.warning(request, "Session expired or user not found. Please log in again.")
+        return redirect("login")
+
+    orders = Order.objects.filter(
+        Q(customer=customer) | Q(email=customer.email)
+    ).prefetch_related("items").order_by("-created_at")
 
     cart_data = get_cart_data(request)
     liked_slugs = request.session.get("liked_products", [])
@@ -319,7 +338,11 @@ def profile(request):
         messages.info(request, "Please login to access your account profile.")
         return redirect("login")
 
-    customer = get_object_or_404(Register, id=user_id)
+    customer = Register.objects.filter(id=user_id).first()
+    if not customer:
+        request.session.flush()
+        messages.warning(request, "User account not found. Please log in again.")
+        return redirect("login")
 
     if request.method == "POST":
         name = request.POST.get("name", "").strip()
@@ -348,15 +371,17 @@ def profile(request):
 
 def login(request):
     if request.method == "POST":
-        email = request.POST.get("email")
-        password = request.POST.get("password")
+        email = request.POST.get("email", "").strip()
+        password = request.POST.get("password", "")
 
-        user = Register.objects.filter(
-            email=email,
-            password=password
-        ).first()
+        user = Register.objects.filter(email=email).first()
 
-        if user:
+        if user and (check_password(password, user.password) or user.password == password):
+            # Auto-upgrade plain text passwords to secure Django hash
+            if not user.password.startswith(('pbkdf2_sha256$', 'argon2', 'bcrypt')):
+                user.password = make_password(password)
+                user.save(update_fields=['password'])
+
             request.session["user_name"] = user.name
             request.session["user_id"] = user.id
             messages.success(request, f"Welcome back, {user.name}!")
@@ -371,11 +396,16 @@ def login(request):
 
 def register(request):
     if request.method == "POST":
-        name = request.POST.get("name")
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-        confirm_password = request.POST.get("confirm_password")
-        mobile = request.POST.get("mobile")
+        name = request.POST.get("name", "").strip()
+        email = request.POST.get("email", "").strip()
+        password = request.POST.get("password", "")
+        confirm_password = request.POST.get("confirm_password", "")
+        mobile = request.POST.get("mobile", "").strip()
+
+        if not name or not email or not password or not mobile:
+            return render(request, "register.html", {
+                "error": "All fields are required."
+            })
 
         if password != confirm_password:
             return render(request, "register.html", {
@@ -390,7 +420,7 @@ def register(request):
         user = Register.objects.create(
             name=name,
             email=email,
-            password=password,
+            password=make_password(password),
             mobile=mobile
         )
         request.session["user_name"] = user.name

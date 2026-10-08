@@ -29,5 +29,6 @@ ENV/
 Thumbs.db
 .DS_Store
 
-# Static / Media (uncomment if needed)
-# media/
+# Static / Media
+staticfiles/
+media/

@@ -137,23 +137,30 @@ def product_edit(request, pk):
     categories = Category.objects.all()
 
     if request.method == "POST":
-        product.name = request.POST.get("name", "").strip()
-        product.price = request.POST.get("price", product.price)
-        old_p = request.POST.get("old_price", "").strip()
-        product.old_price = old_p if old_p else None
-        product.image = request.POST.get("image", product.image).strip()
-        category_id = request.POST.get("category")
-        product.category = Category.objects.filter(id=category_id).first() if category_id else None
-        product.tagline = request.POST.get("tagline", "").strip()
-        product.badge = request.POST.get("badge", "").strip()
-        stock = request.POST.get("stock", str(product.stock)).strip()
-        product.stock = int(stock) if stock.isdigit() else product.stock
-        product.description = request.POST.get("description", "").strip()
-        product.is_featured = request.POST.get("is_featured") == "on"
+        name = request.POST.get("name", "").strip()
+        price = request.POST.get("price", "").strip()
+        image = request.POST.get("image", "").strip()
 
-        product.save()
-        messages.success(request, f"Product '{product.name}' updated successfully!")
-        return redirect("admin_products")
+        if not name or not price or not image:
+            messages.error(request, "Please fill in all required fields (Name, Price, Image URL).")
+        else:
+            product.name = name
+            product.price = price
+            old_p = request.POST.get("old_price", "").strip()
+            product.old_price = old_p if old_p else None
+            product.image = image
+            category_id = request.POST.get("category")
+            product.category = Category.objects.filter(id=category_id).first() if category_id else None
+            product.tagline = request.POST.get("tagline", "").strip()
+            product.badge = request.POST.get("badge", "").strip()
+            stock = request.POST.get("stock", str(product.stock)).strip()
+            product.stock = int(stock) if stock.isdigit() else product.stock
+            product.description = request.POST.get("description", "").strip()
+            product.is_featured = request.POST.get("is_featured") == "on"
+
+            product.save()
+            messages.success(request, f"Product '{product.name}' updated successfully!")
+            return redirect("admin_products")
 
     return render(request, "adminPanel/product_form.html", {
         "active_tab": "products",
