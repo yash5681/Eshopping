@@ -1,0 +1,201 @@
+{% extends "adminPanel/admin_base.html" %}
+
+{% block title %}Dashboard | E-Shop Admin{% endblock %}
+{% block page_title %}Dashboard Overview{% endblock %}
+{% block page_subtitle %}Live store statistics and recent activities{% endblock %}
+
+{% block content %}
+<!-- KPI Stats Row -->
+<div class="row g-3 g-xl-4 mb-4">
+    <!-- Total Revenue -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted fw-semibold small text-uppercase">Total Sales</span>
+                <div class="stat-icon-wrap" style="background:#eaf8ef; color:#198754;">
+                    <i class="bi bi-currency-rupee"></i>
+                </div>
+            </div>
+            <h3 class="fw-bold mb-1">Rs. {{ total_revenue }}</h3>
+            <div class="small text-muted d-flex align-items-center gap-1">
+                <span class="text-success fw-bold"><i class="bi bi-graph-up-arrow"></i> Active</span> store revenue
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Orders -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted fw-semibold small text-uppercase">Total Orders</span>
+                <div class="stat-icon-wrap" style="background:#e8f4fd; color:#0d6efd;">
+                    <i class="bi bi-box-seam"></i>
+                </div>
+            </div>
+            <h3 class="fw-bold mb-1">{{ total_orders }}</h3>
+            <div class="small text-muted d-flex align-items-center gap-1">
+                {% if pending_orders > 0 %}
+                <span class="badge bg-warning text-dark">{{ pending_orders }} pending</span> action needed
+                {% else %}
+                <span class="text-success"><i class="bi bi-check2"></i> All orders processed</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Products -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted fw-semibold small text-uppercase">Store Products</span>
+                <div class="stat-icon-wrap" style="background:#fdf4ea; color:#fd7e14;">
+                    <i class="bi bi-tags"></i>
+                </div>
+            </div>
+            <h3 class="fw-bold mb-1">{{ total_products }}</h3>
+            <div class="small text-muted d-flex align-items-center gap-1">
+                <a href="{% url 'admin_products' %}" class="text-decoration-none text-primary fw-semibold">View Catalog &rarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customers -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted fw-semibold small text-uppercase">Registered Customers</span>
+                <div class="stat-icon-wrap" style="background:#f4ebfd; color:#6f42c1;">
+                    <i class="bi bi-people"></i>
+                </div>
+            </div>
+            <h3 class="fw-bold mb-1">{{ total_customers }}</h3>
+            <div class="small text-muted d-flex align-items-center gap-1">
+                <a href="{% url 'admin_customers' %}" class="text-decoration-none text-primary fw-semibold">Customer list &rarr;</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Grid -->
+<div class="row g-4">
+    <!-- Left: Recent Orders -->
+    <div class="col-lg-8">
+        <div class="card-surface">
+            <div class="card-surface-header">
+                <div>
+                    <h6 class="fw-bold mb-0">Recent Customer Orders</h6>
+                    <small class="text-muted">Latest purchases made on store</small>
+                </div>
+                <a href="{% url 'admin_orders' %}" class="btn btn-outline-secondary btn-sm">View All Orders</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in recent_orders %}
+                        <tr>
+                            <td>
+                                <span class="fw-bold text-dark">#ORD-{{ order.id }}</span>
+                            </td>
+                            <td>
+                                <div class="fw-bold">{{ order.full_name }}</div>
+                                <small class="text-muted">{{ order.phone }}</small>
+                            </td>
+                            <td>
+                                <strong class="text-dark">Rs. {{ order.total_amount }}</strong>
+                            </td>
+                            <td>
+                                <span class="status-badge status-{{ order.status }}">
+                                    <i class="bi bi-circle-fill" style="font-size: 6px;"></i>
+                                    {{ order.status }}
+                                </span>
+                            </td>
+                            <td class="text-muted small">
+                                {{ order.created_at|date:"M d, Y" }}
+                            </td>
+                            <td class="text-end">
+                                <a href="{% url 'admin_order_detail' order.id %}" class="btn btn-light btn-sm border" title="View Order">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary opacity-50"></i>
+                                No orders have been placed yet.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right: Quick Products & Customers -->
+    <div class="col-lg-4">
+        <!-- Catalog Highlights -->
+        <div class="card-surface mb-4">
+            <div class="card-surface-header">
+                <h6 class="fw-bold mb-0">Featured Products</h6>
+                <a href="{% url 'admin_product_add' %}" class="btn btn-brand btn-sm py-1 px-2" style="font-size:12px;">+ Add</a>
+            </div>
+            <div class="p-3">
+                {% for prod in featured_products %}
+                <div class="d-flex align-items-center gap-3 py-2 {% if not forloop.last %}border-bottom{% endif %}">
+                    <img src="{{ prod.image }}" alt="{{ prod.name }}" class="rounded-3" style="width: 48px; height: 48px; object-fit: cover;">
+                    <div class="flex-grow-1 overflow-hidden">
+                        <div class="fw-bold text-truncate small">{{ prod.name }}</div>
+                        <div class="text-muted" style="font-size: 11px;">
+                            {{ prod.category.name|default:"General" }} &bull; Stock: <span class="badge bg-light text-dark border">{{ prod.stock }}</span>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold text-success small">Rs. {{ prod.price }}</div>
+                        <a href="{% url 'admin_product_edit' prod.id %}" class="text-muted small text-decoration-none"><i class="bi bi-pencil-square"></i></a>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted small text-center my-3">No products available.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Recent Customers -->
+        <div class="card-surface">
+            <div class="card-surface-header">
+                <h6 class="fw-bold mb-0">New Customers</h6>
+                <a href="{% url 'admin_customers' %}" class="btn btn-outline-secondary btn-sm py-1 px-2" style="font-size:12px;">View All</a>
+            </div>
+            <div class="p-3">
+                {% for customer in recent_customers %}
+                <div class="d-flex align-items-center gap-3 py-2 {% if not forloop.last %}border-bottom{% endif %}">
+                    <div class="rounded-circle bg-light border text-dark fw-bold d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; font-size:14px;">
+                        {{ customer.name|first|upper }}
+                    </div>
+                    <div class="flex-grow-1 overflow-hidden">
+                        <div class="fw-bold small text-truncate">{{ customer.name }}</div>
+                        <div class="text-muted small text-truncate" style="font-size:11px;">{{ customer.email }}</div>
+                    </div>
+                    <div class="text-muted small">
+                        <i class="bi bi-telephone text-secondary"></i>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted small text-center my-3">No customers registered yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends "adminPanel/admin_base.html" %}
+
+{% block title %}Products Management | E-Shop Admin{% endblock %}
+{% block page_title %}Products Catalog{% endblock %}
+{% block page_subtitle %}Manage your store inventory, pricing and visibility{% endblock %}
+
+{% block content %}
+<div class="card-surface mb-4">
+    <div class="p-4 border-bottom bg-white">
+        <form method="GET" action="{% url 'admin_products' %}" class="row g-3 align-items-center">
+            <!-- Search -->
+            <div class="col-md-5">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="q" class="form-control border-start-0 bg-light" placeholder="Search by product name, description or badge..." value="{{ query }}">
+                </div>
+            </div>
+
+            <!-- Category Filter -->
+            <div class="col-md-4">
+                <select name="category" class="form-select bg-light" onchange="this.form.submit()">
+                    <option value="">All Categories ({{ categories.count }})</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat.slug }}" {% if selected_category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="col-md-3 text-md-end d-flex gap-2 justify-content-md-end">
+                {% if query or selected_category %}
+                <a href="{% url 'admin_products' %}" class="btn btn-outline-secondary btn-sm d-flex align-items-center">Reset</a>
+                {% endif %}
+                <a href="{% url 'admin_product_add' %}" class="btn btn-brand btn-sm d-flex align-items-center gap-1">
+                    <i class="bi bi-plus-circle"></i> Add New Product
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-custom mb-0">
+            <thead>
+                <tr>
+                    <th style="width: 70px;">Image</th>
+                    <th>Product Details</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Badge</th>
+                    <th>Featured</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prod in products %}
+                <tr>
+                    <td>
+                        <img src="{{ prod.image }}" alt="{{ prod.name }}" class="rounded-3 border" style="width: 54px; height: 54px; object-fit: cover;">
+                    </td>
+                    <td>
+                        <div class="fw-bold text-dark">{{ prod.name }}</div>
+                        <small class="text-muted">{{ prod.tagline|default:"Standard edition" }}</small>
+                    </td>
+                    <td>
+                        <span class="badge bg-light text-dark border">{{ prod.category.name|default:"Unassigned" }}</span>
+                    </td>
+                    <td>
+                        <div class="fw-bold text-dark">Rs. {{ prod.price }}</div>
+                        {% if prod.old_price %}
+                        <small class="text-muted text-decoration-line-through">Rs. {{ prod.old_price }}</small>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if prod.stock > 10 %}
+                        <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">{{ prod.stock }} in stock</span>
+                        {% elif prod.stock > 0 %}
+                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1">{{ prod.stock }} low stock</span>
+                        {% else %}
+                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">Out of stock</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if prod.badge %}
+                        <span class="badge rounded-pill text-bg-warning px-2 py-1 fw-bold" style="font-size: 10px;">{{ prod.badge }}</span>
+                        {% else %}
+                        <span class="text-muted small">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if prod.is_featured %}
+                        <span class="text-success"><i class="bi bi-check-circle-fill"></i> Yes</span>
+                        {% else %}
+                        <span class="text-muted"><i class="bi bi-dash-circle"></i> No</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        <div class="btn-group btn-group-sm">
+                            <a href="{% url 'admin_product_edit' prod.id %}" class="btn btn-outline-secondary" title="Edit Product">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="{% url 'admin_product_delete' prod.id %}" class="btn btn-outline-danger" title="Delete Product">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center py-5 text-muted">
+                        <i class="bi bi-bag-x fs-1 d-block mb-2 text-secondary opacity-50"></i>
+                        No products match your search or filter.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="p-3 bg-light border-top text-muted small d-flex justify-content-between align-items-center">
+        <span>Showing <strong>{{ product_count }}</strong> product(s)</span>
+        <span>Store Catalog Status: Active</span>
+    </div>
+</div>
+{% endblock %}

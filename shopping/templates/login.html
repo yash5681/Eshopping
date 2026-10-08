@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sign In | E-Shop{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5 col-xl-4">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-white text-center border-0 pt-4 pb-2">
+                    <a href="{% url 'home' %}" aria-label="EShopping home">
+                        <img class="auth-brand-logo mb-2" src="{% static 'shopping/eshopping-logo.svg' %}" alt="EShopping">
+                    </a>
+                    <h4 class="fw-bold mb-1">Welcome Back</h4>
+                    <p class="text-muted small">Sign in to your customer account</p>
+                </div>
+
+                <div class="card-body p-4 pt-2">
+                    {% if error %}
+                    <div class="alert alert-danger small py-2 px-3 rounded-3 d-flex align-items-center gap-2 mb-3">
+                        <i class="bi bi-exclamation-circle-fill"></i>
+                        <span>{{ error }}</span>
+                    </div>
+                    {% endif %}
+
+                    <form method="POST" action="{% url 'login' %}">
+                        {% csrf_token %}
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted">Email Address</label>
+                            <input type="email" name="email" class="form-control bg-light" placeholder="name@example.com" required autofocus>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted">Password</label>
+                            <input type="password" name="password" class="form-control bg-light" placeholder="Enter your password" required>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-shop py-2 rounded-pill fw-bold">
+                                Sign In
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="text-center small">
+                        <p class="text-muted mb-2">New to E-Shop?</p>
+                        <a href="{% url 'register' %}" class="btn btn-outline-dark btn-sm rounded-pill px-4">
+                            Create an Account
+                        </a>
+                    </div>
+
+                    <div class="text-center mt-3 pt-2">
+                        <a href="{% url 'admin_login' %}" class="text-decoration-none text-muted small">
+                            <i class="bi bi-shield-lock me-1"></i> Staff / Admin Sign In &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

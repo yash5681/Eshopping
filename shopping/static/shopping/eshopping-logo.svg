@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 132" role="img" aria-labelledby="title">
+  <title id="title">EShopping</title>
+  <path d="M120 5 213 30Q228 34 228 49v39q0 13-13 18l-84 22q-11 3-22 0l-84-22Q12 101 12 88V49q0-15 15-19L120 5Z" fill="#11120f" stroke="#b8b39c" stroke-width="5"/>
+  <path d="M120 12 208 35q12 3 12 15v37q0 10-10 14l-84 22q-6 2-12 0l-84-22Q20 97 20 87V50q0-12 12-15l88-23Z" fill="none" stroke="#e2dfd1" stroke-width="2"/>
+  <text x="120" y="69" fill="#39b9c4" font-family="Arial, sans-serif" font-size="27" font-weight="700" text-anchor="middle">EShopping</text>
+  <path d="M43 86h154" stroke="#777363" stroke-width="1.5"/>
+  <circle cx="120" cy="86" r="2.5" fill="#c8bd83"/>
+</svg>

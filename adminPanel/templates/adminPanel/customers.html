@@ -1,0 +1,93 @@
+{% extends "adminPanel/admin_base.html" %}
+
+{% block title %}Customers Directory | E-Shop Admin{% endblock %}
+{% block page_title %}Customer Accounts{% endblock %}
+{% block page_subtitle %}View registered users and customer activity records{% endblock %}
+
+{% block content %}
+<div class="card-surface mb-4">
+    <div class="p-4 border-bottom bg-white">
+        <form method="GET" action="{% url 'admin_customers' %}" class="row g-3 align-items-center">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="q" class="form-control border-start-0 bg-light" placeholder="Search by name, email or phone..." value="{{ query }}">
+                </div>
+            </div>
+            <div class="col-md-6 text-md-end">
+                {% if query %}
+                <a href="{% url 'admin_customers' %}" class="btn btn-outline-secondary btn-sm">Clear Search</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-custom mb-0">
+            <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Email Address</th>
+                    <th>Mobile Phone</th>
+                    <th>Orders Placed</th>
+                    <th>Registered Date</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for customer in customers %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle bg-success-subtle text-success fw-bold d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                {{ customer.name|first|upper }}
+                            </div>
+                            <div>
+                                <div class="fw-bold text-dark">{{ customer.name }}</div>
+                                <small class="text-muted">ID: #CUST-{{ customer.id }}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <a href="mailto:{{ customer.email }}" class="text-decoration-none text-dark">{{ customer.email }}</a>
+                    </td>
+                    <td>
+                        <span class="text-dark">{{ customer.mobile }}</span>
+                    </td>
+                    <td>
+                        {% if customer.order_count > 0 %}
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">{{ customer.order_count }} order(s)</span>
+                        {% else %}
+                        <span class="text-muted small">0 orders</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-muted small">
+                        {% if customer.created_at %}
+                        {{ customer.created_at|date:"M d, Y" }}
+                        {% else %}
+                        —
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        <a href="{% url 'admin_customer_delete' customer.id %}" class="btn btn-outline-danger btn-sm" title="Remove Customer">
+                            <i class="bi bi-trash"></i> Delete
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-5 text-muted">
+                        <i class="bi bi-people fs-1 d-block mb-2 text-secondary opacity-50"></i>
+                        No registered customers found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="p-3 bg-light border-top text-muted small">
+        Total registered customers: <strong>{{ customer_count }}</strong>
+    </div>
+</div>
+{% endblock %}

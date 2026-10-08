@@ -1,0 +1,117 @@
+{% extends "adminPanel/admin_base.html" %}
+
+{% block title %}Orders Management | E-Shop Admin{% endblock %}
+{% block page_title %}Customer Orders{% endblock %}
+{% block page_subtitle %}Track fulfillment, payment and customer delivery statuses{% endblock %}
+
+{% block content %}
+<!-- Status Filter Pills -->
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <a href="{% url 'admin_orders' %}" class="btn btn-sm {% if not status_filter %}btn-dark{% else %}btn-outline-secondary bg-white{% endif %} rounded-pill px-3">
+        All Orders <span class="badge bg-secondary ms-1">{{ status_counts.all }}</span>
+    </a>
+    <a href="{% url 'admin_orders' %}?status=Pending" class="btn btn-sm {% if status_filter == 'Pending' %}btn-warning text-dark fw-bold{% else %}btn-outline-secondary bg-white{% endif %} rounded-pill px-3">
+        Pending <span class="badge bg-warning-subtle text-warning-emphasis ms-1">{{ status_counts.Pending }}</span>
+    </a>
+    <a href="{% url 'admin_orders' %}?status=Processing" class="btn btn-sm {% if status_filter == 'Processing' %}btn-primary fw-bold{% else %}btn-outline-secondary bg-white{% endif %} rounded-pill px-3">
+        Processing <span class="badge bg-primary-subtle text-primary ms-1">{{ status_counts.Processing }}</span>
+    </a>
+    <a href="{% url 'admin_orders' %}?status=Shipped" class="btn btn-sm {% if status_filter == 'Shipped' %}btn-info text-white fw-bold{% else %}btn-outline-secondary bg-white{% endif %} rounded-pill px-3">
+        Shipped <span class="badge bg-info-subtle text-info-emphasis ms-1">{{ status_counts.Shipped }}</span>
+    </a>
+    <a href="{% url 'admin_orders' %}?status=Delivered" class="btn btn-sm {% if status_filter == 'Delivered' %}btn-success fw-bold{% else %}btn-outline-secondary bg-white{% endif %} rounded-pill px-3">
+        Delivered <span class="badge bg-success-subtle text-success ms-1">{{ status_counts.Delivered }}</span>
+    </a>
+    <a href="{% url 'admin_orders' %}?status=Cancelled" class="btn btn-sm {% if status_filter == 'Cancelled' %}btn-danger fw-bold{% else %}btn-outline-secondary bg-white{% endif %} rounded-pill px-3">
+        Cancelled <span class="badge bg-danger-subtle text-danger ms-1">{{ status_counts.Cancelled }}</span>
+    </a>
+</div>
+
+<div class="card-surface mb-4">
+    <div class="p-4 border-bottom bg-white">
+        <form method="GET" action="{% url 'admin_orders' %}" class="row g-3 align-items-center">
+            {% if status_filter %}
+            <input type="hidden" name="status" value="{{ status_filter }}">
+            {% endif %}
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="q" class="form-control border-start-0 bg-light" placeholder="Search by customer name, phone, email, city or order #..." value="{{ query }}">
+                </div>
+            </div>
+            <div class="col-md-6 text-md-end">
+                {% if query %}
+                <a href="{% url 'admin_orders' %}{% if status_filter %}?status={{ status_filter }}{% endif %}" class="btn btn-outline-secondary btn-sm">Clear Search</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-custom mb-0">
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Customer Name</th>
+                    <th>City & Contact</th>
+                    <th>Date</th>
+                    <th>Payment</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th class="text-end">Manage</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>
+                        <span class="fw-bold text-dark">#ORD-{{ order.id }}</span>
+                    </td>
+                    <td>
+                        <div class="fw-bold">{{ order.full_name }}</div>
+                        <small class="text-muted">{{ order.email }}</small>
+                    </td>
+                    <td>
+                        <div><i class="bi bi-geo-alt text-muted small"></i> {{ order.city }}</div>
+                        <small class="text-muted"><i class="bi bi-telephone text-muted small"></i> {{ order.phone }}</small>
+                    </td>
+                    <td class="text-muted small">
+                        {{ order.created_at|date:"M d, Y" }}<br>
+                        <span style="font-size: 11px;">{{ order.created_at|date:"h:i A" }}</span>
+                    </td>
+                    <td>
+                        <span class="badge bg-light text-dark border">{{ order.payment_method }}</span>
+                    </td>
+                    <td>
+                        <strong class="text-dark">Rs. {{ order.total_amount }}</strong>
+                    </td>
+                    <td>
+                        <span class="status-badge status-{{ order.status }}">
+                            <i class="bi bi-circle-fill" style="font-size: 6px;"></i>
+                            {{ order.status }}
+                        </span>
+                    </td>
+                    <td class="text-end">
+                        <a href="{% url 'admin_order_detail' order.id %}" class="btn btn-brand btn-sm" title="View & Process Order">
+                            <i class="bi bi-arrow-right-short fs-6"></i> Details
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center py-5 text-muted">
+                        <i class="bi bi-receipt fs-1 d-block mb-2 text-secondary opacity-50"></i>
+                        No orders found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="p-3 bg-light border-top text-muted small d-flex justify-content-between align-items-center">
+        <span>Showing <strong>{{ orders.count }}</strong> order(s)</span>
+        <span>Filter: {% if status_filter %}{{ status_filter }}{% else %}All statuses{% endif %}</span>
+    </div>
+</div>
+{% endblock %}

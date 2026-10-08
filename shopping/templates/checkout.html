@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout | E-Shop{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="mb-4">
+        <a href="{% url 'cart' %}" class="btn btn-outline-secondary btn-sm rounded-pill">
+            <i class="bi bi-arrow-left"></i> Back to Cart
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <!-- Shipping Details Form -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="rounded-circle bg-success-subtle text-success d-flex align-items-center justify-content-center fw-bold" style="width: 42px; height: 42px;">
+                        1
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">Delivery & Contact Details</h4>
+                        <small class="text-muted">Enter where you'd like your order delivered</small>
+                    </div>
+                </div>
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="row g-3">
+                        <!-- Full Name -->
+                        <div class="col-12">
+                            <label class="form-label fw-bold small text-muted">Full Name *</label>
+                            <input type="text" name="full_name" class="form-control" placeholder="e.g. Yash Prajapati" value="{{ customer.name|default:'' }}" required>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">Email Address *</label>
+                            <input type="email" name="email" class="form-control" placeholder="name@example.com" value="{{ customer.email|default:'' }}" required>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">Mobile Number *</label>
+                            <input type="tel" name="phone" class="form-control" placeholder="10-digit number" value="{{ customer.mobile|default:'' }}" required>
+                        </div>
+
+                        <!-- Street Address -->
+                        <div class="col-12">
+                            <label class="form-label fw-bold small text-muted">Street / Flat / Apartment Address *</label>
+                            <textarea name="address" class="form-control" rows="2" placeholder="House/Flat number, building name, street..." required></textarea>
+                        </div>
+
+                        <!-- City -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">City / Town *</label>
+                            <input type="text" name="city" class="form-control" placeholder="e.g. Ahmedabad, Mumbai" required>
+                        </div>
+
+                        <!-- PIN Code -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">Postal / PIN Code</label>
+                            <input type="text" name="postal_code" class="form-control" placeholder="e.g. 380015">
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Payment Method -->
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="rounded-circle bg-success-subtle text-success d-flex align-items-center justify-content-center fw-bold" style="width: 42px; height: 42px;">
+                            2
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0">Payment Method</h5>
+                            <small class="text-muted">Choose how you wish to pay</small>
+                        </div>
+                    </div>
+
+                    <div class="p-3 border rounded-3 bg-light mb-4">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="payment_method" id="payCOD" value="Cash on Delivery" checked>
+                            <label class="form-check-label fw-bold" for="payCOD">
+                                Cash on Delivery (COD)
+                            </label>
+                            <div class="small text-muted ms-4">Pay with cash or UPI directly when your order is delivered to you.</div>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_method" id="payOnline" value="Pay Online on Delivery">
+                            <label class="form-check-label fw-bold" for="payOnline">
+                                UPI / QR Scanner on Delivery
+                            </label>
+                            <div class="small text-muted ms-4">Scan driver QR code via Google Pay, PhonePe, or Paytm.</div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-shop w-100 py-3 rounded-pill fw-bold fs-6">
+                        <i class="bi bi-bag-check-fill me-2"></i> Confirm and Place Order (Rs. {{ cart_total }})
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Order Summary Column -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 100px;">
+                <h5 class="fw-bold mb-3">Order Summary ({{ cart_count }} items)</h5>
+
+                <div class="overflow-auto mb-3" style="max-height: 320px;">
+                    {% for item in cart_items %}
+                    <div class="d-flex align-items-center gap-3 py-2 border-bottom">
+                        <img src="{{ item.image }}" alt="{{ item.name }}" class="rounded-3 border" style="width: 54px; height: 54px; object-fit: cover;">
+                        <div class="flex-grow-1">
+                            <div class="fw-bold small">{{ item.name }}</div>
+                            <div class="text-muted small">Qty: {{ item.quantity }} &times; Rs. {{ item.price }}</div>
+                        </div>
+                        <strong class="small text-dark">Rs. {{ item.subtotal }}</strong>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="d-flex justify-content-between mb-2 small text-muted">
+                    <span>Items Subtotal:</span>
+                    <span>Rs. {{ cart_total }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2 small text-muted">
+                    <span>Shipping Charges:</span>
+                    <span class="text-success fw-bold">FREE</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="fw-bold fs-5">Total to Pay:</span>
+                    <span class="fw-bold fs-4 text-success">Rs. {{ cart_total }}</span>
+                </div>
+
+                <div class="bg-light p-3 rounded-3 border small text-muted">
+                    <i class="bi bi-shield-lock-fill text-success me-1"></i>
+                    All personal and delivery data is handled securely under our privacy policy.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
